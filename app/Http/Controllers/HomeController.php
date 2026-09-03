@@ -85,7 +85,8 @@ class HomeController extends Controller{
     public function logoutWeb(Request $request): RedirectResponse
     {
         $token=PersonalAccessToken::where('name',$request->session()->getId())->first();
-        $token->delete();
+        if($token)
+            $token->delete();
         $request->session()->invalidate();
         Auth::logout();
         return redirect()->route('loginPage');

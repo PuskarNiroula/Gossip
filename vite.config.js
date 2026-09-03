@@ -9,9 +9,9 @@ export default defineConfig({
         ]),
     ],
     server: {
-        host:'gossip.com',
+        host:'127.0.0.1',
         hmr:{
-            host: "gossip.com",
+            host: "127.0.0.1",
         },
     },
 });
