@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ExtraController;
 use App\Http\Controllers\Api\GroupChatApiController;
 use App\Http\Controllers\Api\KeyController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\PrivateKeyController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/sendPasswordResetLinkEmail', 'sendResetLink')->name('password.email');
     Route::post('/api/resetPassword/{token}/{email}', 'resetPassword')->name('password.update');
 
+
 });
 Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
     ->name('verification.verify');
@@ -30,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/api/logout', 'logout')->name('api.logout');
         Route::post('/api/change-password', 'changePassword')->name('api.changePassword');
         Route::post('api/logout','logoutAllDevices')->name('api.logout');
+        Route::post('/api/verify-password','verifyPassword')->name('verifyPassword');
     });
 
     Route::get('/api/user/{receiverId}/public-key',[KeyController::class,'getPublicKey'])->name('getPublicKey');
@@ -64,6 +67,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/api/group-chat/leave-group','leaveGroupChat')->name('leaveGroupChat');
     });
 
+
+    Route::controller(PrivateKeyController::class)->group(function () {
+        Route::get('/api/get-private-meta-data','getPrivateKeyMetaData')->name('getPrivateKeyMetaData');
+        Route::post('/api/save-private-key','savePrivateKey')->name('save-private-key');
+    });
 
 });
 

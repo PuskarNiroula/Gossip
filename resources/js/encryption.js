@@ -215,6 +215,7 @@ async function getEncryptedRoomKeyByVersion(conversationId, RequestedKeyVersion,
 
     const keyName = `${userId}-${conversationId}-${RequestedKeyVersion}`;
 
+
     const cachedKey = localStorage.getItem(keyName);
     if (cachedKey) {
         return cachedKey;
