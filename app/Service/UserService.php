@@ -6,6 +6,7 @@ use App\Exception\UserNotFoundException;
 use App\Interface\UserRepoInterface;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 
 class UserService{
@@ -20,19 +21,25 @@ class UserService{
      if($this->userRepo->emailExists($data['email'])){
          throw new Exception('Email already exists');
      }
+    DB::beginTransaction();
+     try {
+         $user = $this->userRepo->createUsers($data);
+         if ($user == null)
+             throw new Exception('Error creating user');
+         $user->sendEmailVerificationNotification();
+         DB::commit();
+         return $user;
 
-     $user=$this->userRepo->createUsers($data);
-   if($user==null)
-       throw new Exception('Error creating user');
-    $user->sendEmailVerificationNotification();
-   return $user;
+     }catch (Exception $e){
+         DB::rollBack();
+         throw $e;
+     }
     }
 
     public function updateProfile(array $data): User
     {
         $user = auth()->user();
         if (!$user) throw new UserNotFoundException('You are not logged in');
-        // Handle avatar file
         if (!empty($data['avatar'])) {
             $file = $data['avatar'];
             $extension = $file->getClientOriginalExtension();
