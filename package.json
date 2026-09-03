@@ -1,6 +1,7 @@
 {
     "dependencies": {
         "ably": "^2.14.0",
+        "argon2-browser": "^1.18.0",
         "laravel-echo": "^2.2.6",
         "pusher-js": "^8.4.0"
     },

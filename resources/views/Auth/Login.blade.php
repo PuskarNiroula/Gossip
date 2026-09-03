@@ -178,14 +178,12 @@
                 }
 
             } else {
+
                 const stored = localStorage.getItem(`private_key_${userId}`);
 
                 if (!stored) {
-                    console.log('trying to logout');
-                    await secureFetch('/api/logout', {
-                        method: 'POST',
-                    });
-                    return;
+                   window.location.href = '/recover-private-key';
+                   return;
                 }
             }
 

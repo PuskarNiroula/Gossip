@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 
 use App\Models\Session;
+use App\Models\UserPrivateKey;
 use App\Service\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AuthController extends Controller
 {
@@ -226,5 +228,33 @@ class AuthController extends Controller
             'message' => 'Logged out from all devices'
         ]);
     }
+
+    public function verifyPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ], 404);
+        }
+        if(Hash::check($request->password,$user->password)){
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Password is correct',
+                'userId' => $user->id,
+            ]);
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Password is incorrect'
+        ],400);
+    }
+
+
 
 }

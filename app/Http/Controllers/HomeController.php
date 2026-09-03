@@ -130,4 +130,10 @@ class HomeController extends Controller{
     public function resetPassword():view{
         return view('Auth.Reset_Password');
     }
+    public function recoveryPassword():view{
+        return view('Auth.Recovery_Password');
+    }
+    public function recoverPrivateKey():view{
+        return view('Auth.Private-key-extraction');
+    }
 }
