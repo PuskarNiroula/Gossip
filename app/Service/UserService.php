@@ -27,6 +27,7 @@ class UserService{
          $user = $this->userRepo->createUsers($data);
          if ($user == null)
              throw new Exception('Error creating user');
+         SendUserVerificationEmail::dispatch($user);
          DB::commit();
          return $user;
 
