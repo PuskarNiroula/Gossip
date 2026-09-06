@@ -4,39 +4,143 @@
 
 @section('styles')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    .chat-sidebar {
+        width: 320px;
+        min-width: 320px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: width .25s ease, min-width .25s ease;
+        overflow: hidden;
+        position: relative;
+    }
 
+    .chat-sidebar.collapsed {
+        width: 0;
+        min-width: 0;
+        border-right: none;
+        overflow: hidden;
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 60px;
+        padding: 0 16px;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .sidebar-title h5 {
+        color: #e9edef;
+        font-size: 20px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .sidebar-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #aebac1;
+    }
+
+    .sidebar-actions > .dropdown > i {
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .sidebar-toggle-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: #1f2c33;
+        color: #aebac1;
+        border-radius: 50%;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .sidebar-toggle-btn:hover {
+        background: #2a3942;
+        color: #e9edef;
+    }
+
+    .sidebar-toggle-btn i {
+        font-size: 19px;
+    }
+
+    .chat-sidebar.collapsed .sidebar-title,
+    .chat-sidebar.collapsed .sidebar-actions,
+    .chat-sidebar.collapsed .search-wrap,
+    .chat-sidebar.collapsed .chat-list {
+        display: none;
+    }
+
+    .chat-sidebar.collapsed .sidebar-toggle-btn {
+        display: none;
+    }
+
+
+</style>
 @endsection
 
 @section('content')
     <div class="d-flex w-100 h-100">
 
-        <div class="chat-sidebar">
+        <div class="chat-sidebar" id="chatSidebar">
 
             <div class="sidebar-header">
-                <h5>Gossip</h5>
-                <div class="dropdown">
-                    <i class="bi bi-three-dots-vertical"
-                       role="button"
-                       data-bs-toggle="dropdown"
-                       aria-expanded="false"></i>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="/group-chat/create">
-                                <i class="bi bi-people me-2"></i>Create Group Chat
-                            </a>
-                        </li>
-                    </ul>
+
+                <div class="sidebar-title">
+                    <h5>Gossip</h5>
                 </div>
+
+                <div class="sidebar-actions">
+
+                    <div class="dropdown">
+                        <i class="bi bi-three-dots-vertical"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false"></i>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="/group-chat/create">
+                                    <i class="bi bi-people me-2"></i>Create Group Chat
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+
+
             </div>
+
+
 
             <div class="search-wrap position-relative">
                 <i class="bi bi-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Search or start new chat" autocomplete="off">
+
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Search or start new chat"
+                       autocomplete="off">
+
                 <div id="searchResults"></div>
             </div>
 
             <div class="chat-list" id="chatList"></div>
+
         </div>
+
 
         <div id="start-chatting" class="chat-area" style="display:none;">
 
@@ -114,27 +218,55 @@
     <script src="{{ asset('js/groupChatHelpers.js') }}"></script>
     <script>
 
+
+        const chatSidebar = document.getElementById('chatSidebar');
+        const chatSidebarToggle = document.getElementById('chatSidebarToggle');
+
+        let chatSidebarCollapsed =
+            localStorage.getItem('chatSidebarCollapsed') === 'true';
+
+        if (chatSidebarCollapsed) {
+            chatSidebar.classList.add('collapsed');
+        }
+
+        chatSidebarToggle.addEventListener('click', function () {
+            chatSidebar.classList.toggle('collapsed');
+
+            const collapsed = chatSidebar.classList.contains('collapsed');
+
+            localStorage.setItem('chatSidebarCollapsed', collapsed);
+
+            if (collapsed) {
+                chatSidebarToggle.title = 'Show Chats';
+                chatSidebarToggle.querySelector('i').className =
+                    'bi bi-layout-sidebar-inset-reverse';
+            } else {
+                chatSidebarToggle.title = 'Hide Chats';
+                chatSidebarToggle.querySelector('i').className =
+                    'bi bi-layout-sidebar-inset';
+            }
+        });
+
+
         let selectedUserId = null;
-        let conId          = null;
-        const myId         = `{{ Auth::id() }}`;
+        let conId = null;
+        const myId = `{{ Auth::id() }}`;
 
-        const chatMessages   = document.getElementById('chatMessages');
-        const chatUserEl     = document.getElementById('chat_user');
-        const sendBtn        = document.getElementById('sendBtn');
-        const msgInput       = document.getElementById('message_to_be_sent');
-
-
+        const chatMessages = document.getElementById('chatMessages');
+        const chatUserEl = document.getElementById('chat_user');
+        const sendBtn = document.getElementById('sendBtn');
+        const msgInput = document.getElementById('message_to_be_sent');
 
 
-        function buildBubble({ text, time, isSent, avatar, senderName, showAvatar, decryptFailed, isGroup }) {
+        function buildBubble({text, time, isSent, avatar, senderName, showAvatar, decryptFailed, isGroup}) {
             const row = document.createElement('div');
             row.classList.add('msg-row', isSent ? 'sent' : 'received');
 
             if (!isSent && isGroup) {
                 const img = document.createElement('img');
-                img.src       = avatarUrl(avatar);
+                img.src = avatarUrl(avatar);
                 img.className = 'msg-avatar' + (showAvatar ? '' : ' hidden');
-                img.alt       = '';
+                img.alt = '';
                 row.appendChild(img);
             }
 
@@ -142,31 +274,31 @@
             bubble.classList.add('msg-bubble', isSent ? 'sent' : 'received');
 
 
-                if(isGroup){
-                    const nameEl       = document.createElement('div');
-                    nameEl.className   = 'msg-sender-name';
-                    nameEl.textContent = senderName;
-                    bubble.appendChild(nameEl);
-                }
+            if (isGroup) {
+                const nameEl = document.createElement('div');
+                nameEl.className = 'msg-sender-name';
+                nameEl.textContent = senderName;
+                bubble.appendChild(nameEl);
+            }
 
 
-            const textEl       = document.createElement('div');
-            textEl.className   = 'msg-text' + (decryptFailed ? ' msg-decrypt-error' : '');
+            const textEl = document.createElement('div');
+            textEl.className = 'msg-text' + (decryptFailed ? ' msg-decrypt-error' : '');
             textEl.textContent = decryptFailed ? '' : text;
             bubble.appendChild(textEl);
 
-            const meta     = document.createElement('div');
+            const meta = document.createElement('div');
             meta.className = 'msg-meta';
 
-            const timeEl       = document.createElement('span');
-            timeEl.className   = 'msg-time';
+            const timeEl = document.createElement('span');
+            timeEl.className = 'msg-time';
             timeEl.textContent = formatTime(time);
             meta.appendChild(timeEl);
 
             if (isSent) {
                 const ticks = document.createElement('span');
-                ticks.className  = 'msg-ticks';
-                ticks.innerHTML  = '<i class="bi bi-check2-all tick-icon"></i>';
+                ticks.className = 'msg-ticks';
+                ticks.innerHTML = '<i class="bi bi-check2-all tick-icon"></i>';
                 meta.appendChild(ticks);
             }
 
@@ -178,7 +310,7 @@
         async function loadMessages(conversationId) {
             try {
                 document.getElementById('start-chatting').style.display = 'flex';
-                document.getElementById('logo-image-div').style.display  = 'none';
+                document.getElementById('logo-image-div').style.display = 'none';
 
                 const meta = await secureFetch(`/api/conversation/${conversationId}/meta`);
                 document.getElementById('avatar-pic').src = avatarUrl(meta.avatar);
@@ -189,7 +321,7 @@
                     ? groupOptions.classList.remove('d-none')
                     : groupOptions.classList.add('d-none');
 
-                if(meta.is_admin===false) {
+                if (meta.is_admin === false) {
                     document.getElementById('remove-members-option').classList.add('d-none');
                 }
                 if (meta.status === "InActive") {
@@ -197,10 +329,9 @@
                 }
 
 
-
                 conId = conversationId;
 
-                const res      = await secureFetch(`/getMessages/${conversationId}`, { method: 'GET' });
+                const res = await secureFetch(`/getMessages/${conversationId}`, {method: 'GET'});
                 const messages = res.messages || [];
 
                 chatMessages.innerHTML = '';
@@ -212,54 +343,52 @@
                     </div>`;
                     return;
                 }
-                const lateKeyForThisConversation =getLatestKey(conId);
+                const lateKeyForThisConversation = getLatestKey(conId);
 
                 const decrypted = await Promise.all(
                     messages.slice().reverse().map(async (msg) => {
                         try {
-                            const text = await decryptMessage(msg.message,conId, msg.iv, msg.key_version,lateKeyForThisConversation);
-                            return { ...msg, text, failed: false };
+                            const text = await decryptMessage(msg.message, conId, msg.iv, msg.key_version, lateKeyForThisConversation);
+                            return {...msg, text, failed: false};
                         } catch {
-                            return { ...msg, text: null, failed: true };
+                            return {...msg, text: null, failed: true};
                         }
                     })
                 );
 
-                let lastDate   = null;
+                let lastDate = null;
                 let lastSender = null;
 
                 for (let i = 0; i < decrypted.length; i++) {
-                    const msg    = decrypted[i];
+                    const msg = decrypted[i];
                     const isSent = msg.sender_id === parseInt(myId);
 
                     if (!lastDate || !isSameDay(lastDate, msg.time)) {
                         const div = document.createElement('div');
-                        div.className   = 'date-divider';
-                        div.innerHTML   = `<span>${formatDate(msg.time)}</span>`;
+                        div.className = 'date-divider';
+                        div.innerHTML = `<span>${formatDate(msg.time)}</span>`;
                         chatMessages.appendChild(div);
-                        lastDate   = msg.time;
+                        lastDate = msg.time;
                         lastSender = null;
                     }
 
                     const showAvatar = msg.sender_id !== lastSender;
-                    lastSender       = msg.sender_id;
+                    lastSender = msg.sender_id;
 
 
-                      if(!msg.failed){
-                          const bubble = buildBubble({
-                              text:         msg.text,
-                              time:         msg.time,
-                              isSent,
-                              avatar:       msg.avatar,
-                              senderName:   null,
-                              showAvatar,
-                              decryptFailed: msg.failed,
-                              isGroup:      meta.is_group,
-                          });
-                          chatMessages.appendChild(bubble);
-                      }
-
-
+                    if (!msg.failed) {
+                        const bubble = buildBubble({
+                            text: msg.text,
+                            time: msg.time,
+                            isSent,
+                            avatar: msg.avatar,
+                            senderName: null,
+                            showAvatar,
+                            decryptFailed: msg.failed,
+                            isGroup: meta.is_group,
+                        });
+                        chatMessages.appendChild(bubble);
+                    }
 
 
                 }
@@ -278,9 +407,9 @@
             msgInput.value = '';
 
             const tempBubble = buildBubble({
-                text:    message,
-                time:    new Date().toISOString(),
-                isSent:  true,
+                text: message,
+                time: new Date().toISOString(),
+                isSent: true,
                 showAvatar: false,
                 decryptFailed: false,
                 isGroup: false,
@@ -292,7 +421,7 @@
                 const keyVersion = await getLatestKey(conId);
                 console.log("Key Version: ", keyVersion);
 
-                const sharedKey = await getSharedKeyByVersion(conId, keyVersion,keyVersion);
+                const sharedKey = await getSharedKeyByVersion(conId, keyVersion, keyVersion);
                 console.log("Shared Key: ", sharedKey);
                 const encrypted = await encryptMessage(message, sharedKey);
 
@@ -300,10 +429,10 @@
                 await secureFetch('/sendMessage', {
                     method: 'POST',
                     body: {
-                        conversation_id:   conId,
+                        conversation_id: conId,
                         encrypted_message: encrypted.data,
-                        iv:                encrypted.iv,
-                        key_version:       keyVersion,
+                        iv: encrypted.iv,
+                        key_version: keyVersion,
                     }
                 });
 
@@ -315,17 +444,19 @@
         }
 
         sendBtn.addEventListener('click', sendMessage);
-        msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(); });
+        msgInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) sendMessage();
+        });
 
         async function loadSidebar() {
             try {
-                const users    = await secureFetch('/getSidebarMembers');
+                const users = await secureFetch('/getSidebarMembers');
                 const chatList = document.getElementById('chatList');
                 chatList.innerHTML = '';
 
                 for (const user of users) {
 
-                    let preview     = '';
+                    let preview = '';
 
                     try {
                         if (user.last_message && user.iv) {
@@ -335,7 +466,9 @@
                                 user.iv,
                                 user.key_version);
                         }
-                    } catch { preview = ''; }
+                    } catch {
+                        preview = '';
+                    }
 
                     const item = document.createElement('div');
                     item.className = 'chat-item' + (conId === user.conversation_id ? ' active' : '');
@@ -354,7 +487,7 @@
                         document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
                         item.classList.add('active');
 
-                        conId          = user.conversation_id;
+                        conId = user.conversation_id;
                         selectedUserId = user.chat_member_id;
                         chatUserEl.textContent = user.chat_name;
 
@@ -369,20 +502,26 @@
 
 
         const resultsContainer = document.getElementById('searchResults');
-        const searchInput      = document.getElementById('searchInput');
+        const searchInput = document.getElementById('searchInput');
 
         async function search(query) {
-            if (!query) { resultsContainer.style.display = 'none'; return; }
+            if (!query) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
             resultsContainer.innerHTML = '<div class="search-item text-muted">Searching…</div>';
             resultsContainer.style.display = 'block';
 
             try {
-                const results = await secureFetch(`/search/${encodeURIComponent(query)}`, { method: 'GET' });
+                const results = await secureFetch(`/search/${encodeURIComponent(query)}`, {method: 'GET'});
                 resultsContainer.innerHTML = '';
 
-                if (!results.length) { resultsContainer.style.display = 'none'; return; }
+                if (!results.length) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
 
-                results.forEach(({ id, name, avatar }) => {
+                results.forEach(({id, name, avatar}) => {
                     const div = document.createElement('div');
                     div.className = 'search-item';
                     div.innerHTML = `
@@ -401,13 +540,15 @@
 
         searchInput.addEventListener('input', debounce((e) => search(e.target.value), 500));
         searchInput.addEventListener('blur', () => setTimeout(() => resultsContainer.style.display = 'none', 150));
-        searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) search(searchInput.value); });
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim()) search(searchInput.value);
+        });
         resultsContainer.addEventListener('mousedown', (e) => e.preventDefault());
 
         async function createOrOpenChat(user_id) {
             try {
                 selectedUserId = user_id;
-                let data = await secureFetch(`/api/conversation/${user_id}/check`, { method: 'GET' });
+                let data = await secureFetch(`/api/conversation/${user_id}/check`, {method: 'GET'});
 
                 if (!data || !data.conversationId) {
                     data = await createConversation(user_id);
@@ -428,27 +569,26 @@
         async function createConversation() {
             const roomKey = crypto.getRandomValues(new Uint8Array(16));
 
-            const senderRes   = await getMyPublicKey();
+            const senderRes = await getMyPublicKey();
             const receiverRes = await getPublicKey(selectedUserId);
 
-            const encryptedRoomKeyForSender   = await encryptWithPublicKey(roomKey, senderRes.public_key);
+            const encryptedRoomKeyForSender = await encryptWithPublicKey(roomKey, senderRes.public_key);
             const encryptedRoomKeyForReceiver = await encryptWithPublicKey(roomKey, receiverRes.public_key);
 
-         const response= await secureFetch('/api/conversation/create-private-conversation', {
+            const response = await secureFetch('/api/conversation/create-private-conversation', {
                 method: 'POST',
                 body: {
-                    sender_id:                    myId,
-                    receiver_id:                  selectedUserId,
-                    encrypted_room_key_for_sender:   encryptedRoomKeyForSender,
+                    sender_id: myId,
+                    receiver_id: selectedUserId,
+                    encrypted_room_key_for_sender: encryptedRoomKeyForSender,
                     encrypted_room_key_for_receiver: encryptedRoomKeyForReceiver,
                 }
 
             });
-            let key_name = localStorage.getItem('user_id')+"-"+"-"+response.conversationId+"-"+response.latestKeyVersion;
-            localStorage.setItem(key_name,encryptedRoomKeyForSender);
+            let key_name = localStorage.getItem('user_id') + "-" + "-" + response.conversationId + "-" + response.latestKeyVersion;
+            localStorage.setItem(key_name, encryptedRoomKeyForSender);
             return response;
         }
-
 
 
         document.addEventListener('DOMContentLoaded', () => {
