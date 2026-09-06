@@ -2,7 +2,6 @@ FROM php:8.4-cli
 
 WORKDIR /app
 
-# System dependencies + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -19,18 +18,14 @@ RUN apt-get update && apt-get install -y \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy Laravel application
 COPY . .
 
-# Install PHP dependencies
 RUN composer install \
     --no-dev \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader
 
-# Railway provides PORT at runtime
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT}"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
