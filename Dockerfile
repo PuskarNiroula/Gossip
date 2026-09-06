@@ -1,4 +1,4 @@
-FROM php:8.4-cli
+FROM php:8.4-fpm
 
 WORKDIR /app
 
@@ -15,12 +15,23 @@ RUN apt-get update && apt-get install -y \
     bcmath \
     exif \
     pcntl \
-    zip
+    zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
-RUN composer install --optimize-autoloader --no-interaction --no-dev
+RUN composer install \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-dev
 
-CMD php artisan serve --host=0.0.0.0 --port=${PORT}
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+
+EXPOSE 9000
+
+CMD ["php-fpm"]
