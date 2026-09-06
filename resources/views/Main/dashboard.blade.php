@@ -5,88 +5,295 @@
 @section('styles')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-    .chat-sidebar {
-        width: 320px;
-        min-width: 320px;
+    /* =========================================================
+   CHAT LAYOUT - DESKTOP
+   ========================================================= */
+
+    .chat-area {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
         height: 100%;
         display: flex;
         flex-direction: column;
-        transition: width .25s ease, min-width .25s ease;
         overflow: hidden;
-        position: relative;
     }
 
-    .chat-sidebar.collapsed {
-        width: 0;
+    .chat-messages {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .chat-input-area {
+        flex-shrink: 0;
+    }
+
+    .chat-logo {
+        flex: 1 1 auto;
         min-width: 0;
-        border-right: none;
-        overflow: hidden;
-    }
-
-    .sidebar-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 60px;
-        padding: 0 16px;
-        flex-shrink: 0;
-        position: relative;
-    }
-
-    .sidebar-title h5 {
-        color: #e9edef;
-        font-size: 20px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .sidebar-actions {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        color: #aebac1;
-    }
-
-    .sidebar-actions > .dropdown > i {
-        font-size: 20px;
-        cursor: pointer;
-    }
-
-    .sidebar-toggle-btn {
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        background: #1f2c33;
-        color: #aebac1;
-        border-radius: 50%;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
-    .sidebar-toggle-btn:hover {
-        background: #2a3942;
-        color: #e9edef;
-    }
-
-    .sidebar-toggle-btn i {
-        font-size: 19px;
-    }
-
-    .chat-sidebar.collapsed .sidebar-title,
-    .chat-sidebar.collapsed .sidebar-actions,
-    .chat-sidebar.collapsed .search-wrap,
-    .chat-sidebar.collapsed .chat-list {
-        display: none;
-    }
-
-    .chat-sidebar.collapsed .sidebar-toggle-btn {
-        display: none;
+        height: 100%;
     }
 
 
+    /* =========================================================
+       TABLET
+       ========================================================= */
+
+    @media (max-width: 768px) {
+
+        .chat-sidebar {
+            width: 280px;
+            min-width: 280px;
+        }
+
+        .sidebar-header {
+            min-height: 56px;
+            padding: 0 14px;
+        }
+
+        .sidebar-title h5 {
+            font-size: 18px;
+        }
+
+        .search-wrap {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .chat-item {
+            padding: 10px 12px;
+        }
+
+        .chat-area {
+            min-width: 0;
+        }
+
+        .chat-header {
+            min-height: 58px;
+            padding: 8px 12px;
+        }
+
+        .chat-messages {
+            padding: 10px;
+        }
+
+        .chat-input-area {
+            padding: 8px;
+        }
+
+        .chat-logo {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-logo img {
+            max-width: 180px;
+            width: 60%;
+            height: auto;
+        }
+    }
+
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 576px) {
+
+        /*
+         * On mobile, don't allow sidebar + chat to squeeze
+         * each other. Only one screen should be visible.
+         */
+
+        .d-flex.w-100.h-100 {
+            width: 100% !important;
+            height: 100dvh !important;
+            min-height: 0 !important;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-sidebar {
+            width: 100%;
+            min-width: 100%;
+            max-width: 100%;
+            height: 100%;
+            flex: 0 0 100%;
+            border-right: none;
+        }
+
+        .chat-sidebar.collapsed {
+            display: none;
+        }
+
+        .chat-area {
+            width: 100%;
+            min-width: 100%;
+            max-width: 100%;
+            height: 100%;
+            flex: 0 0 100%;
+            min-height: 0;
+        }
+
+        .chat-header {
+            flex-shrink: 0;
+            min-height: 56px;
+            padding: 8px 10px;
+        }
+
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .chat-header h6 {
+            max-width: 180px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-header small {
+            font-size: 11px;
+        }
+
+        .chat-messages {
+            flex: 1 1 0;
+            width: 100%;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chat-input-area {
+            width: 100%;
+            flex-shrink: 0;
+            min-height: 58px;
+            padding: 8px;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            display: flex;
+            gap: 8px;
+        }
+
+        #message_to_be_sent {
+            min-width: 0;
+            flex: 1 1 auto;
+            width: auto;
+        }
+
+        .btn-send {
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .msg-row {
+            max-width: 100%;
+        }
+
+        .msg-bubble {
+            max-width: 82%;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .msg-text {
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .chat-logo {
+            width: 100%;
+            min-width: 100%;
+            height: 100%;
+            flex: 0 0 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .chat-logo img {
+            width: min(55vw, 180px);
+            max-width: 180px;
+            height: auto;
+        }
+
+        .chat-logo p {
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        /* Search results must stay inside the phone */
+        #searchResults {
+            width: 100%;
+            max-width: 100%;
+            left: 0;
+            right: 0;
+            overflow-x: hidden;
+        }
+
+        /* Dropdown should not overflow */
+        .dropdown-menu {
+            max-width: calc(100vw - 20px);
+        }
+    }
+
+
+    /* =========================================================
+       VERY SMALL PHONES
+       ========================================================= */
+
+    @media (max-width: 380px) {
+
+        .sidebar-header {
+            padding: 0 10px;
+        }
+
+        .sidebar-title h5 {
+            font-size: 17px;
+        }
+
+        .chat-header {
+            padding: 6px 8px;
+        }
+
+        .chat-header img {
+            width: 36px;
+            height: 36px;
+        }
+
+        .chat-header h6 {
+            max-width: 140px;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            padding: 6px;
+        }
+
+        .msg-bubble {
+            max-width: 88%;
+        }
+
+        .chat-input-area {
+            padding: 6px;
+        }
+
+        #message_to_be_sent {
+            font-size: 14px;
+        }
+    }
 </style>
 @endsection
 
