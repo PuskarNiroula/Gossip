@@ -26,7 +26,7 @@ class HomeController extends Controller{
         if(Auth::check()){
             return redirect()->route('dashboard');
         }
-        return view('Auth.login');
+        return view('Auth.Login');
     }
 
     public function loginWeb(Request $request):JsonResponse
