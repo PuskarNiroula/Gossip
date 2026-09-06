@@ -28,7 +28,7 @@ Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(AuthController::class)->group(function () {
-        Route::post('/api/user/public-key', 'publicKey')->name('getPublicKey');
+        Route::post('/api/user/public-key', 'publicKey')->name('getMyPublicKey');
         Route::post('/api/logout', 'logout')->name('api.logout');
         Route::post('/api/change-password', 'changePassword')->name('api.changePassword');
         Route::post('api/logout','logoutAllDevices')->name('api.logout');
@@ -62,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/api/group-chat/create','createGroupChat')->name('createGroupChat');
         Route::get('/api/group-chat/new-member/{name}/search','searchNewMember')->name('searchNewMember');
         Route::get('/api/group-chat/{conversationId}/get-old-members','getGroupMembers')->name('getOldMembers');
-        Route::post('/api/group-chat/add-members','addNewMembers')->name('addNewMembers');
+        Route::post('/api/group-chat/add-members','addNewMembers')->name('api.addNewMembers');
         Route::post('/api/group-chat/remove-members','removeMembers')->name('removeMembers');
         Route::post('/api/group-chat/leave-group','leaveGroupChat')->name('leaveGroupChat');
     });
