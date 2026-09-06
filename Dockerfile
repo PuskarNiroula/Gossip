@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.4-cli
 
 WORKDIR /app
 
@@ -28,10 +28,6 @@ RUN composer install \
     --no-interaction \
     --no-dev
 
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+EXPOSE 8080
 
-EXPOSE 9000
-
-CMD ["php-fpm"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
