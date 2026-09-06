@@ -2,7 +2,6 @@
 namespace App\Service;
 
 use App\Events\MessageSent;
-use App\Events\MessagesRead;
 use App\Interface\LastMessageRepositoryInterface;
 use App\Interface\MessageRepositoryInterface;
 use App\Models\Conversation;
@@ -117,17 +116,10 @@ class MessageService {
         }
 
 
-        $readMessageIds = $this->messageRepository->markAsRead($conversation_id);
+        $this->messageRepository->markAsRead($conversation_id);
 
         $this->markCacheMessagesAsRead($conversation_id);
 
-        if (!empty($readMessageIds)) {
-            broadcast(new MessagesRead(
-                $conversation_id,
-                auth()->id(),
-                $readMessageIds
-            ))->toOthers();
-        }
 
         $cache=app(ChatCacheService::class)->getMessage($conversation_id);
         if(!empty($cache)){
