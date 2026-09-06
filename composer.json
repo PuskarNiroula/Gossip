@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.4",
         "ext-redis": "*",
+        "ext-pcntl": "*",
         "ably/ably-php": "*",
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.13",
