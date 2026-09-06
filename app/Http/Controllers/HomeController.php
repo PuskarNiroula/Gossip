@@ -122,7 +122,7 @@ class HomeController extends Controller{
         return view('Main.dashboard');
     }
     public function profile():view{
-        return view('Main.profile');
+        return view('Main.Profile');
     }
     public function forgotPassword():view{
         return view('Auth.Forget_Password');

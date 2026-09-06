@@ -8,6 +8,7 @@ use App\Models\Conversation;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Throwable;
 
 class MessageService {
@@ -113,12 +114,16 @@ class MessageService {
         if(!$this->conversationUserService->checkValidConversation(auth()->id(),$conversation_id)){
             throw new Exception("Conversation doesn't belong to you");
         }
+
+
         $this->messageRepository->markAsRead($conversation_id);
+
+        $this->markCacheMessagesAsRead($conversation_id);
+
 
         $cache=app(ChatCacheService::class)->getMessage($conversation_id);
         if(!empty($cache)){
             return [
-                'source'=>'redis',
                 'messages'=>$cache
             ];
         }
@@ -127,13 +132,13 @@ class MessageService {
         $transformed = $messages->getCollection()->map(function ($item) {
 
             return [
-                'source'=>"database",
                 'sender_id' => $item->sender_id,
                 'message' => $item->encrypted_message,
                 'avatar'=>User::find($item->sender_id)->avatar??"avatar.jpg",
                 'iv'=>$item->iv,
                 'key_version'=>$item->key_version,
                 'time'=>$item->created_at,
+                'is_read'=>$item->is_read,
             ];
         });
         foreach($transformed->values()->toArray() as $message){
@@ -220,5 +225,37 @@ class MessageService {
             $messageDto['key_version'],
             $avatar
         );
+    }
+
+    private function markCacheMessagesAsRead(int $conversationId): void
+    {
+        $key = "chat:message:{$conversationId}";
+
+        $messages = Redis::lrange($key, 0, -1);
+
+        if (empty($messages)) {
+            return;
+        }
+
+        $updatedMessages = [];
+
+        foreach ($messages as $message) {
+            $data = json_decode($message, true);
+
+            if (
+                $data['sender_id'] != auth()->id() &&
+                !$data['is_read']
+            ) {
+                $data['is_read'] = true;
+            }
+
+            $updatedMessages[] = json_encode($data);
+        }
+
+        Redis::del($key);
+
+        foreach ($updatedMessages as $message) {
+            Redis::rpush($key, $message);
+        }
     }
 }
