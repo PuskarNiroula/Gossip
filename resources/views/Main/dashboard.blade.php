@@ -258,7 +258,7 @@
         const msgInput = document.getElementById('message_to_be_sent');
 
 
-        function buildBubble({text, time, isSent, avatar, senderName, showAvatar, decryptFailed, isGroup}) {
+        function buildBubble({text, time, isSent, avatar, senderName, showAvatar, decryptFailed, isGroup,isRead}) {
             const row = document.createElement('div');
             row.classList.add('msg-row', isSent ? 'sent' : 'received');
 
@@ -295,7 +295,7 @@
             timeEl.textContent = formatTime(time);
             meta.appendChild(timeEl);
 
-            if (isSent) {
+            if (isRead) {
                 const ticks = document.createElement('span');
                 ticks.className = 'msg-ticks';
                 ticks.innerHTML = '<i class="bi bi-check2-all tick-icon"></i>';
@@ -377,6 +377,11 @@
 
 
                     if (!msg.failed) {
+                        let boolIsRead =false;
+
+                        if(msg.sender_id+"" === myId) {
+                            boolIsRead = msg.is_read;
+                        }
                         const bubble = buildBubble({
                             text: msg.text,
                             time: msg.time,
@@ -386,6 +391,7 @@
                             showAvatar,
                             decryptFailed: msg.failed,
                             isGroup: meta.is_group,
+                            isRead:boolIsRead,
                         });
                         chatMessages.appendChild(bubble);
                     }
@@ -413,16 +419,15 @@
                 showAvatar: false,
                 decryptFailed: false,
                 isGroup: false,
+                isRead: false,
             });
             chatMessages.appendChild(tempBubble);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
                 const keyVersion = await getLatestKey(conId);
-                console.log("Key Version: ", keyVersion);
 
                 const sharedKey = await getSharedKeyByVersion(conId, keyVersion, keyVersion);
-                console.log("Shared Key: ", sharedKey);
                 const encrypted = await encryptMessage(message, sharedKey);
 
 
@@ -610,5 +615,6 @@
                 });
             }
         }
+
     </script>
 @endsection
