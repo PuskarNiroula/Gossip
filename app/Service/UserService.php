@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Exception\UserNotFoundException;
 use App\Interface\UserRepoInterface;
+use App\Jobs\SendUserVerificationEmail;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,6 @@ class UserService{
          $user = $this->userRepo->createUsers($data);
          if ($user == null)
              throw new Exception('Error creating user');
-         $user->sendEmailVerificationNotification();
          DB::commit();
          return $user;
 
@@ -50,10 +50,8 @@ class UserService{
 
             $filename = uniqid() . '_' . time() . '.' . $extension;
 
-            // Save new avatar
             $file->move(public_path('images/avatars'), $filename);
 
-            // Delete old avatar if exists
             if ($user->avatar && file_exists(public_path('images/avatars/' . $user->avatar))) {
                 @unlink(public_path('images/avatars/' . $user->avatar));
             }
