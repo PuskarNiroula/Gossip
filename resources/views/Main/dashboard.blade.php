@@ -437,8 +437,6 @@
                     let color="black";
                     let fontWeight='normal';
 
-                    console.log(conId+":"+user.conversation_id);
-
                         if(conId!=user.conversation_id && user.is_read == 0 && user.last_message_sender!="Myself") {
                             color = "red";
                             fontWeight = "bold";
