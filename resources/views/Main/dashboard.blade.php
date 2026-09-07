@@ -5,10 +5,6 @@
 @section('styles')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-    /* =========================================================
-   CHAT LAYOUT - DESKTOP
-   ========================================================= */
-
     .chat-area {
         flex: 1 1 auto;
         min-width: 0;
@@ -96,16 +92,8 @@
     }
 
 
-    /* =========================================================
-       MOBILE
-       ========================================================= */
-
     @media (max-width: 576px) {
 
-        /*
-         * On mobile, don't allow sidebar + chat to squeeze
-         * each other. Only one screen should be visible.
-         */
 
         .d-flex.w-100.h-100 {
             width: 100% !important;
@@ -242,17 +230,10 @@
             right: 0;
             overflow-x: hidden;
         }
-
-        /* Dropdown should not overflow */
         .dropdown-menu {
             max-width: calc(100vw - 20px);
         }
     }
-
-
-    /* =========================================================
-       VERY SMALL PHONES
-       ========================================================= */
 
     @media (max-width: 380px) {
 
@@ -293,6 +274,18 @@
         #message_to_be_sent {
             font-size: 14px;
         }
+    }
+    .chat-sidebar {
+        width: 320px;
+        min-width: 320px;
+        transition: width 0.25s ease, min-width 0.25s ease;
+    }
+
+    .chat-sidebar.collapsed {
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow: hidden;
+        border-right: 0;
     }
 </style>
 @endsection
@@ -422,6 +415,7 @@
 @endsection
 
 @section('scripts')
+
     <script src="{{ asset('js/groupChatHelpers.js') }}"></script>
     <script>
 
