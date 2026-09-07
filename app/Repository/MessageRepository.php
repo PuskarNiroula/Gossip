@@ -38,4 +38,12 @@ class MessageRepository implements MessageRepositoryInterface
                 'is_read' => 1,
             ]);
     }
+
+    public function isUnread(int $conversationId, int $myId): bool
+    {
+        return Message::where('conversation_id', $conversationId)
+            ->where('sender_id', '!=', $myId)
+            ->where('is_read', 0)
+            ->exists();
+    }
 }

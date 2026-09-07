@@ -1,9 +1,11 @@
 <?php
 namespace App\Service;
 
+use App\Events\MessageRead;
 use App\Events\MessageSent;
 use App\Interface\LastMessageRepositoryInterface;
 use App\Interface\MessageRepositoryInterface;
+use App\Models\ConUser;
 use App\Models\Conversation;
 use App\Models\User;
 use Exception;
@@ -115,10 +117,15 @@ class MessageService {
             throw new Exception("Conversation doesn't belong to you");
         }
 
+        if($this->messageRepository->isUnread($conversation_id,auth()->id())){
+            $conUser=ConUser::where('conversation_id',$conversation_id)->whereNot('user_id',auth()->id())->first()->user_id;
 
-        $this->messageRepository->markAsRead($conversation_id);
+            broadcast(new MessageRead($conversation_id,auth()->id(),$conUser));
+            $this->messageRepository->markAsRead($conversation_id);
+            $this->markCacheMessagesAsRead($conversation_id);
+        }
 
-        $this->markCacheMessagesAsRead($conversation_id);
+
 
 
         $cache=app(ChatCacheService::class)->getMessage($conversation_id);
@@ -128,6 +135,8 @@ class MessageService {
             ];
         }
         $messages= $this->messageRepository->getMessagesByConversation($conversation_id);
+
+
 
         $transformed = $messages->getCollection()->map(function ($item) {
 

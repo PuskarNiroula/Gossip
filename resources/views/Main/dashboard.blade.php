@@ -4,297 +4,7 @@
 
 @section('styles')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-    /* =========================================================
-   CHAT LAYOUT - DESKTOP
-   ========================================================= */
-
-    .chat-area {
-        flex: 1 1 auto;
-        min-width: 0;
-        min-height: 0;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .chat-messages {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .chat-input-area {
-        flex-shrink: 0;
-    }
-
-    .chat-logo {
-        flex: 1 1 auto;
-        min-width: 0;
-        height: 100%;
-    }
-
-
-    /* =========================================================
-       TABLET
-       ========================================================= */
-
-    @media (max-width: 768px) {
-
-        .chat-sidebar {
-            width: 280px;
-            min-width: 280px;
-        }
-
-        .sidebar-header {
-            min-height: 56px;
-            padding: 0 14px;
-        }
-
-        .sidebar-title h5 {
-            font-size: 18px;
-        }
-
-        .search-wrap {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .chat-item {
-            padding: 10px 12px;
-        }
-
-        .chat-area {
-            min-width: 0;
-        }
-
-        .chat-header {
-            min-height: 58px;
-            padding: 8px 12px;
-        }
-
-        .chat-messages {
-            padding: 10px;
-        }
-
-        .chat-input-area {
-            padding: 8px;
-        }
-
-        .chat-logo {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .chat-logo img {
-            max-width: 180px;
-            width: 60%;
-            height: auto;
-        }
-    }
-
-
-    /* =========================================================
-       MOBILE
-       ========================================================= */
-
-    @media (max-width: 576px) {
-
-        /*
-         * On mobile, don't allow sidebar + chat to squeeze
-         * each other. Only one screen should be visible.
-         */
-
-        .d-flex.w-100.h-100 {
-            width: 100% !important;
-            height: 100dvh !important;
-            min-height: 0 !important;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .chat-sidebar {
-            width: 100%;
-            min-width: 100%;
-            max-width: 100%;
-            height: 100%;
-            flex: 0 0 100%;
-            border-right: none;
-        }
-
-        .chat-sidebar.collapsed {
-            display: none;
-        }
-
-        .chat-area {
-            width: 100%;
-            min-width: 100%;
-            max-width: 100%;
-            height: 100%;
-            flex: 0 0 100%;
-            min-height: 0;
-        }
-
-        .chat-header {
-            flex-shrink: 0;
-            min-height: 56px;
-            padding: 8px 10px;
-        }
-
-        .chat-header img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .chat-header h6 {
-            max-width: 180px;
-            margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-header small {
-            font-size: 11px;
-        }
-
-        .chat-messages {
-            flex: 1 1 0;
-            width: 100%;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .chat-input-area {
-            width: 100%;
-            flex-shrink: 0;
-            min-height: 58px;
-            padding: 8px;
-            padding-bottom: max(8px, env(safe-area-inset-bottom));
-            display: flex;
-            gap: 8px;
-        }
-
-        #message_to_be_sent {
-            min-width: 0;
-            flex: 1 1 auto;
-            width: auto;
-        }
-
-        .btn-send {
-            flex: 0 0 42px;
-            width: 42px;
-            height: 42px;
-        }
-
-        .msg-row {
-            max-width: 100%;
-        }
-
-        .msg-bubble {
-            max-width: 82%;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
-
-        .msg-text {
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
-
-        .chat-logo {
-            width: 100%;
-            min-width: 100%;
-            height: 100%;
-            flex: 0 0 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .chat-logo img {
-            width: min(55vw, 180px);
-            max-width: 180px;
-            height: auto;
-        }
-
-        .chat-logo p {
-            font-size: 13px;
-            margin-top: 15px;
-        }
-
-        /* Search results must stay inside the phone */
-        #searchResults {
-            width: 100%;
-            max-width: 100%;
-            left: 0;
-            right: 0;
-            overflow-x: hidden;
-        }
-
-        /* Dropdown should not overflow */
-        .dropdown-menu {
-            max-width: calc(100vw - 20px);
-        }
-    }
-
-
-    /* =========================================================
-       VERY SMALL PHONES
-       ========================================================= */
-
-    @media (max-width: 380px) {
-
-        .sidebar-header {
-            padding: 0 10px;
-        }
-
-        .sidebar-title h5 {
-            font-size: 17px;
-        }
-
-        .chat-header {
-            padding: 6px 8px;
-        }
-
-        .chat-header img {
-            width: 36px;
-            height: 36px;
-        }
-
-        .chat-header h6 {
-            max-width: 140px;
-            font-size: 14px;
-        }
-
-        .chat-messages {
-            padding: 6px;
-        }
-
-        .msg-bubble {
-            max-width: 88%;
-        }
-
-        .chat-input-area {
-            padding: 6px;
-        }
-
-        #message_to_be_sent {
-            font-size: 14px;
-        }
-    }
-</style>
+    <link rel="stylesheet" href="/css/dashboard.css"/>
 @endsection
 
 @section('content')
@@ -465,33 +175,54 @@
         const msgInput = document.getElementById('message_to_be_sent');
 
 
-        function buildBubble({text, time, isSent, avatar, senderName, showAvatar, decryptFailed, isGroup,isRead}) {
+        function buildBubble({
+                                 text,
+                                 time,
+                                 isSent,
+                                 avatar,
+                                 senderName,
+                                 showAvatar,
+                                 decryptFailed,
+                                 isGroup,
+                                 isRead,
+                                 senderId
+                             }) {
             const row = document.createElement('div');
             row.classList.add('msg-row', isSent ? 'sent' : 'received');
 
             if (!isSent && isGroup) {
                 const img = document.createElement('img');
+
                 img.src = avatarUrl(avatar);
                 img.className = 'msg-avatar' + (showAvatar ? '' : ' hidden');
                 img.alt = '';
+
                 row.appendChild(img);
             }
 
             const bubble = document.createElement('div');
-            bubble.classList.add('msg-bubble', isSent ? 'sent' : 'received');
-
+            bubble.classList.add(
+                'msg-bubble',
+                isSent ? 'sent' : 'received'
+            );
 
             if (isGroup) {
                 const nameEl = document.createElement('div');
+
                 nameEl.className = 'msg-sender-name';
                 nameEl.textContent = senderName;
+
                 bubble.appendChild(nameEl);
             }
 
-
             const textEl = document.createElement('div');
-            textEl.className = 'msg-text' + (decryptFailed ? ' msg-decrypt-error' : '');
+
+            textEl.className =
+                'msg-text' +
+                (decryptFailed ? ' msg-decrypt-error' : '');
+
             textEl.textContent = decryptFailed ? '' : text;
+
             bubble.appendChild(textEl);
 
             const meta = document.createElement('div');
@@ -500,20 +231,33 @@
             const timeEl = document.createElement('span');
             timeEl.className = 'msg-time';
             timeEl.textContent = formatTime(time);
+
             meta.appendChild(timeEl);
 
-            if (isRead) {
-                const ticks = document.createElement('span');
-                ticks.className = 'msg-ticks';
-                ticks.innerHTML = '<i class="bi bi-check2-all tick-icon"></i>';
+            const ticks = document.createElement('span');
+
+            ticks.className = 'msg-ticks';
+
+            const tickIcon = document.createElement('i');
+
+            tickIcon.className = 'bi bi-check2-all tick-icon';
+
+            if (!isRead) {
+                tickIcon.style.color = '#000';
+            }
+
+            if(senderId == myId)
+            {
+                ticks.appendChild(tickIcon);
                 meta.appendChild(ticks);
             }
 
             bubble.appendChild(meta);
+
             row.appendChild(bubble);
+
             return row;
         }
-
         async function loadMessages(conversationId) {
             try {
                 document.getElementById('start-chatting').style.display = 'flex';
@@ -584,11 +328,7 @@
 
 
                     if (!msg.failed) {
-                        let boolIsRead =false;
 
-                        if(msg.sender_id+"" === myId) {
-                            boolIsRead = msg.is_read;
-                        }
                         const bubble = buildBubble({
                             text: msg.text,
                             time: msg.time,
@@ -598,7 +338,8 @@
                             showAvatar,
                             decryptFailed: msg.failed,
                             isGroup: meta.is_group,
-                            isRead:boolIsRead,
+                            isRead:msg.is_read,
+                            senderId:msg.sender_id,
                         });
                         chatMessages.appendChild(bubble);
                     }
@@ -609,6 +350,7 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
             } catch (err) {
+                console.log(err);
 
             }
         }
@@ -660,6 +402,13 @@
             if (e.key === 'Enter' && !e.shiftKey) sendMessage();
         });
 
+        async function markConversationRead(conversationId) {
+            try {
+                await secureFetch(`/api/conversation/${conversationId}/mark-read`, {method: 'POST'});
+            } catch (err) {
+            }
+        }
+
         async function loadSidebar() {
             try {
                 const users = await secureFetch('/getSidebarMembers');
@@ -683,13 +432,25 @@
                     }
 
                     const item = document.createElement('div');
+                    const isUnread = user.last_message_sender !== "Myself" && user.is_read == 0;
+
+                    let color="black";
+                    let fontWeight='normal';
+
+                        if(conId!=user.conversation_id && user.is_read == 0 && user.last_message_sender!="Myself") {
+                            color = "red";
+                            fontWeight = "bold";
+                            }
+
+
                     item.className = 'chat-item' + (conId === user.conversation_id ? ' active' : '');
+                    item.dataset.unread = isUnread ? '1' : '0';
 
                     item.innerHTML = `
                     <img src="${avatarUrl(user.avatar)}" alt="">
                     <div class="chat-info">
                         <h6>${user.chat_name || 'Unknown'}</h6>
-                        <small>${preview}</small>
+                        <small style="color:${color};font-weight: ${fontWeight}">${preview}</small>
                     </div>
                     <div class="chat-item-meta">
                         <span class="chat-item-time">${user.last_time ? formatTime(user.last_time) : ''}</span>
@@ -702,6 +463,14 @@
                         conId = user.conversation_id;
                         selectedUserId = user.chat_member_id;
                         chatUserEl.textContent = user.chat_name;
+
+                        if (item.dataset.unread === '1') {
+                            const previewEl = item.querySelector('small');
+                            previewEl.style.color = 'black';
+                            previewEl.style.fontWeight = 'normal';
+                            item.dataset.unread = '0';
+                            markConversationRead(conId);
+                        }
 
                         loadMessages(conId);
                     });
@@ -774,6 +543,9 @@
                 }
 
                 loadMessages(conId);
+
+
+
             } catch (err) {
             }
         }
